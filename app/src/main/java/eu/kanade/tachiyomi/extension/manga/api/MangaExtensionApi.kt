@@ -108,9 +108,10 @@ internal class MangaExtensionApi {
         val storeOrExtensions = response.body.source().decompressIfGzipped().use { source ->
             when (source.peek().readByte()) {
                 // "[..."
-                0x5B.toByte() -> return lenientJson
-                    .decodeFromBufferedSource<List<ExtensionJsonObject>>(source)
-                    .toExtensions(repoDir)
+                0x5B.toByte() ->
+                    return lenientJson
+                        .decodeFromBufferedSource<List<ExtensionJsonObject>>(source)
+                        .toExtensions(repoDir)
                 // "{..."
                 0x7B.toByte() -> lenientJson.decodeFromBufferedSource<NetworkMangaExtensionStore>(source)
                 // Gzip-compressed or raw protobuf store
@@ -128,10 +129,12 @@ internal class MangaExtensionApi {
             val response = networkService.client.newCall(GET(store.extensionListUrl!!)).awaitSuccess()
             response.body.source().decompressIfGzipped().use { source ->
                 when (source.peek().readByte()) {
-                    0x7B.toByte() -> lenientJson
-                        .decodeFromBufferedSource<NetworkMangaExtensionStore.ExtensionList>(source)
-                    else -> protoBuf
-                        .decodeFromByteArray<NetworkMangaExtensionStore.ExtensionList>(source.readByteArray())
+                    0x7B.toByte() ->
+                        lenientJson
+                            .decodeFromBufferedSource<NetworkMangaExtensionStore.ExtensionList>(source)
+                    else ->
+                        protoBuf
+                            .decodeFromByteArray<NetworkMangaExtensionStore.ExtensionList>(source.readByteArray())
                 }
             }
         } else {
