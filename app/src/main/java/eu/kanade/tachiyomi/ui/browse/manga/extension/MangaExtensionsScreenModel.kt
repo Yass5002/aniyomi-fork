@@ -70,10 +70,8 @@ class MangaExtensionsScreenModel(
                                 it.name.contains(input, ignoreCase = true) ||
                                     it.id == input.toLongOrNull() ||
                                     if (it is HttpSource) {
-                                        it.baseUrl.contains(
-                                            input,
-                                            ignoreCase = true,
-                                        )
+                                        it.baseUrl.contains(input, ignoreCase = true) ||
+                                            it.getHomeUrl().contains(input, ignoreCase = true)
                                     } else {
                                         false
                                     }

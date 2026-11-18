@@ -24,7 +24,14 @@ class UpdateMangaExtensionRepo(
             repo.signingKeyFingerprint.startsWith("NOFINGERPRINT") ||
             repo.signingKeyFingerprint == newRepo.signingKeyFingerprint
         ) {
-            repository.upsertRepo(newRepo)
+            when {
+                newRepo.baseUrl == repo.baseUrl -> repository.upsertRepo(newRepo)
+                repo.signingKeyFingerprint == newRepo.signingKeyFingerprint -> repository.replaceRepo(newRepo)
+                else -> {
+                    repository.deleteRepo(repo.baseUrl)
+                    repository.upsertRepo(newRepo)
+                }
+            }
         }
     }
 }

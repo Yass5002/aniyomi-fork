@@ -553,7 +553,7 @@ class MainActivity : BaseActivity() {
                         navigator.push(AnimeExtensionStoresScreen(repoUrl))
                     }
                 } // Deep link to add extension repo
-                else if (intent.scheme == "tachiyomi" && intent.data?.host == "add-repo") {
+                else if (intent.isAddMangaExtensionRepoIntent()) {
                     intent.data?.getQueryParameter("url")?.let { repoUrl ->
                         navigator.popUntilRoot()
                         navigator.push(MangaExtensionReposScreen(repoUrl))
@@ -581,6 +581,11 @@ class MainActivity : BaseActivity() {
         ExternalIntents.externalIntents.episodeId?.let {
             outState.putLong(SAVED_STATE_EPISODE_KEY, it)
         }
+    }
+
+    private fun Intent.isAddMangaExtensionRepoIntent(): Boolean {
+        return (scheme == "tachiyomi" || scheme == "mihon") &&
+            (data?.host == "add-repo" || data?.host == "extension-store")
     }
 
     private fun Intent.isAddAnimeExtensionStoreIntent(): Boolean {

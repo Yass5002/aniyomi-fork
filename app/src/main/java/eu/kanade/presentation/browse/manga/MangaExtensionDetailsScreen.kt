@@ -79,7 +79,7 @@ fun MangaExtensionDetailsScreen(
 ) {
     val uriHandler = LocalUriHandler.current
     val url = remember(state.extension) {
-        val regex = """https://raw.githubusercontent.com/(.+?)/(.+?)/.+""".toRegex()
+        val regex = """https://(?:raw\.githubusercontent\.com|github\.com)/([^/]+)/([^/]+)/.+""".toRegex()
         regex.find(state.extension?.repoUrl.orEmpty())
             ?.let {
                 val (user, repo) = it.destructured

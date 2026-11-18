@@ -69,7 +69,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="tachiyomi" />
+                <data android:scheme="mihon" />
                 <data android:host="add-repo" />
+                <data android:host="extension-store" />
             </intent-filter>
 
             <!-- Legacy deeplink to add anime extension store -->
