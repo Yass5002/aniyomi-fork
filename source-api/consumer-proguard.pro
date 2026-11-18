@@ -14,9 +14,19 @@
 }
 
 # Types anime extensions implement, extend or construct
+-keep class eu.kanade.tachiyomi.animesource.AnimeSource { public protected *; }
+-keep class eu.kanade.tachiyomi.animesource.AnimeSource$DefaultImpls { public protected *; }
+-keep class eu.kanade.tachiyomi.animesource.AnimeCatalogueSource { public protected *; }
+-keep class eu.kanade.tachiyomi.animesource.AnimeCatalogueSource$DefaultImpls { public protected *; }
+-keep class eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource { public protected *; }
+-keep class eu.kanade.tachiyomi.animesource.AnimeSourceFactory { public protected *; }
+-keep class eu.kanade.tachiyomi.animesource.UnmeteredAnimeSource { public protected *; }
 -keep class eu.kanade.tachiyomi.animesource.model.** { public protected *; }
 -keep class eu.kanade.tachiyomi.animesource.online.** { public protected *; }
 -keep class eu.kanade.tachiyomi.animesource.** extends eu.kanade.tachiyomi.animesource.AnimeSource { public protected *; }
+-keepclassmembers class eu.kanade.tachiyomi.animesource.online.AnimeHttpSource {
+    private kotlin.Lazy headers$delegate;
+}
 
 # Final classes and top-level functions extensions call into
 -keep,allowoptimization class eu.kanade.tachiyomi.AppInfo { public protected *; }

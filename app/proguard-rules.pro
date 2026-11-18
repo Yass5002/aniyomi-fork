@@ -1,5 +1,9 @@
 -dontobfuscate
 
+# Injekt reads the injected type from the generic superclass of its type tokens
+-keepattributes Signature
+-keep,allowshrinking class * extends uy.kohesive.injekt.api.FullTypeReference
+
 -keep,allowoptimization class eu.kanade.**
 -keep,allowoptimization class tachiyomi.**
 -keep,allowoptimization class mihon.**
@@ -12,18 +16,19 @@
 -keep,allowoptimization class kotlin.** { public protected *; }
 -keep,allowoptimization class kotlinx.coroutines.** { public protected *; }
 -keep,allowoptimization class kotlinx.serialization.** { public protected *; }
+-keep,allowoptimization class kotlin.time.** { public protected *; }
+-keep,allowoptimization class kotlinx.datetime.** { public protected *; }
 -keep,allowoptimization class okhttp3.** { public protected *; }
 -keep,allowoptimization class okio.** { public protected *; }
 -keep,allowoptimization class org.jsoup.** { public protected *; }
 -keep,allowoptimization class rx.** { public protected *; }
 -keep,allowoptimization class app.cash.quickjs.** { public protected *; }
--keep,allowoptimization class uy.kohesive.injekt.** { public protected *; }
 -keep,allowoptimization class is.xyz.mpv.** { public protected *; }
 -keep,allowoptimization class com.arthenica.** { public protected *; }
+-keep class com.squareup.zstd.** { *; }
 
 # From extensions-lib
--keep,allowoptimization class eu.kanade.tachiyomi.network.interceptor.RateLimitInterceptorKt { public protected *; }
--keep,allowoptimization class eu.kanade.tachiyomi.network.interceptor.SpecificHostRateLimitInterceptorKt { public protected *; }
+-keep class eu.kanade.tachiyomi.network.interceptor.** { *; }
 -keep,allowoptimization class eu.kanade.tachiyomi.network.NetworkHelper { public protected *; }
 -keep,allowoptimization class eu.kanade.tachiyomi.network.OkHttpExtensionsKt { public protected *; }
 -keep,allowoptimization class eu.kanade.tachiyomi.network.RequestsKt { public protected *; }

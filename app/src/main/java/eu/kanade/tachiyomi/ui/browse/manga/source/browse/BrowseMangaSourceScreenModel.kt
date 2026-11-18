@@ -26,6 +26,7 @@ import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.util.removeCovers
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
@@ -35,9 +36,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import logcat.LogPriority
 import tachiyomi.core.common.preference.CheckboxState
 import tachiyomi.core.common.preference.mapAsCheckboxState
 import tachiyomi.core.common.util.lang.launchIO
+import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.category.manga.interactor.GetMangaCategories
 import tachiyomi.domain.category.manga.interactor.SetMangaCategories
 import tachiyomi.domain.category.model.Category
@@ -84,14 +87,15 @@ class BrowseMangaSourceScreenModel(
                 var query: String? = null
                 var listing = it.listing
 
+                val filters = getFilterList()
                 if (listing is Listing.Search) {
                     query = listing.query
-                    listing = Listing.Search(query, source.getFilterList())
+                    listing = Listing.Search(query, filters)
                 }
 
                 it.copy(
                     listing = listing,
-                    filters = source.getFilterList(),
+                    filters = filters,
                     toolbarQuery = query,
                 )
             }
@@ -99,6 +103,15 @@ class BrowseMangaSourceScreenModel(
 
         if (!getIncognitoState.await(source.id)) {
             sourcePreferences.lastUsedMangaSource().set(source.id)
+        }
+    }
+
+    private fun getFilterList(): FilterList {
+        return try {
+            (source as? CatalogueSource)?.getFilterList() ?: FilterList()
+        } catch (e: Throwable) {
+            logcat(LogPriority.ERROR, e)
+            FilterList()
         }
     }
 
@@ -113,10 +126,15 @@ class BrowseMangaSourceScreenModel(
                 getRemoteManga.subscribe(sourceId, listing.query ?: "", listing.filters)
             }.flow.map { pagingData ->
                 pagingData.map {
-                    networkToLocalManga.await(it.toDomainManga(sourceId))
-                        .let { localManga -> getManga.subscribe(localManga.url, localManga.source) }
-                        .filterNotNull()
-                        .stateIn(ioCoroutineScope)
+                    try {
+                        networkToLocalManga.await(it.toDomainManga(sourceId))
+                            .let { localManga -> getManga.subscribe(localManga.url, localManga.source) }
+                            .filterNotNull()
+                            .stateIn(ioCoroutineScope)
+                    } catch (e: Throwable) {
+                        logcat(LogPriority.ERROR, e)
+                        MutableStateFlow(it.toDomainManga(sourceId))
+                    }
                 }
                     .filter { !hideInLibraryItems || !it.value.favorite }
             }
@@ -147,7 +165,7 @@ class BrowseMangaSourceScreenModel(
     fun resetFilters() {
         if (source !is CatalogueSource) return
 
-        mutableState.update { it.copy(filters = source.getFilterList()) }
+        mutableState.update { it.copy(filters = getFilterList()) }
     }
 
     fun setListing(listing: Listing) {
@@ -168,7 +186,7 @@ class BrowseMangaSourceScreenModel(
         if (source !is CatalogueSource) return
 
         val input = state.value.listing as? Listing.Search
-            ?: Listing.Search(query = null, filters = source.getFilterList())
+            ?: Listing.Search(query = null, filters = getFilterList())
 
         mutableState.update {
             it.copy(
@@ -184,7 +202,7 @@ class BrowseMangaSourceScreenModel(
     fun searchGenre(genreName: String) {
         if (source !is CatalogueSource) return
 
-        val defaultFilters = source.getFilterList()
+        val defaultFilters = getFilterList()
         var genreExists = false
 
         filter@ for (sourceFilter in defaultFilters) {

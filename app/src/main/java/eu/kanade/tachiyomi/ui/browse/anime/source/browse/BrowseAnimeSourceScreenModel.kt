@@ -27,6 +27,7 @@ import eu.kanade.tachiyomi.util.removeBackgrounds
 import eu.kanade.tachiyomi.util.removeCovers
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
@@ -36,9 +37,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import logcat.LogPriority
 import tachiyomi.core.common.preference.CheckboxState
 import tachiyomi.core.common.preference.mapAsCheckboxState
 import tachiyomi.core.common.util.lang.launchIO
+import tachiyomi.core.common.util.system.logcat
 import tachiyomi.domain.category.anime.interactor.GetAnimeCategories
 import tachiyomi.domain.category.anime.interactor.SetAnimeCategories
 import tachiyomi.domain.category.model.Category
@@ -85,20 +88,30 @@ class BrowseAnimeSourceScreenModel(
             var query: String? = null
             var listing = it.listing
 
+            val filters = getFilterList()
             if (listing is Listing.Search) {
                 query = listing.query
-                listing = Listing.Search(query, source.getFilterList())
+                listing = Listing.Search(query, filters)
             }
 
             it.copy(
                 listing = listing,
-                filters = source.getFilterList(),
+                filters = filters,
                 toolbarQuery = query,
             )
         }
 
         if (!getIncognitoState.await(source.id)) {
             sourcePreferences.lastUsedAnimeSource().set(source.id)
+        }
+    }
+
+    private fun getFilterList(): AnimeFilterList {
+        return try {
+            source.getFilterList()
+        } catch (e: Throwable) {
+            logcat(LogPriority.ERROR, e)
+            AnimeFilterList()
         }
     }
 
@@ -113,10 +126,15 @@ class BrowseAnimeSourceScreenModel(
                 getRemoteAnime.subscribe(sourceId, listing.query ?: "", listing.filters)
             }.flow.map { pagingData ->
                 pagingData.map {
-                    networkToLocalAnime.await(it.toDomainAnime(sourceId))
-                        .let { localAnime -> getAnime.subscribe(localAnime.url, localAnime.source) }
-                        .filterNotNull()
-                        .stateIn(ioCoroutineScope)
+                    try {
+                        networkToLocalAnime.await(it.toDomainAnime(sourceId))
+                            .let { localAnime -> getAnime.subscribe(localAnime.url, localAnime.source) }
+                            .filterNotNull()
+                            .stateIn(ioCoroutineScope)
+                    } catch (e: Throwable) {
+                        logcat(LogPriority.ERROR, e)
+                        MutableStateFlow(it.toDomainAnime(sourceId))
+                    }
                 }
                     .filter { !hideInLibraryItems || !it.value.favorite }
             }
@@ -145,7 +163,7 @@ class BrowseAnimeSourceScreenModel(
     }
 
     fun resetFilters() {
-        mutableState.update { it.copy(filters = source.getFilterList()) }
+        mutableState.update { it.copy(filters = getFilterList()) }
     }
 
     fun setListing(listing: Listing) {
@@ -162,7 +180,7 @@ class BrowseAnimeSourceScreenModel(
 
     fun search(query: String? = null, filters: AnimeFilterList? = null) {
         val input = state.value.listing as? Listing.Search
-            ?: Listing.Search(query = null, filters = source.getFilterList())
+            ?: Listing.Search(query = null, filters = getFilterList())
 
         mutableState.update {
             it.copy(
@@ -176,7 +194,7 @@ class BrowseAnimeSourceScreenModel(
     }
 
     fun searchGenre(genreName: String) {
-        val defaultFilters = source.getFilterList()
+        val defaultFilters = getFilterList()
         var genreExists = false
 
         filter@ for (sourceFilter in defaultFilters) {

@@ -4,22 +4,18 @@
     <img src="./.github/assets/logo.png" alt="Aniyomi logo" title="Aniyomi logo" width="80"/>
 </a>
 
-# Aniyomi [App](#)
+# Aniyomi Fork
 
 ### Full-featured player and reader, based on ~~Tachiyomi~~ Mihon.
-Discover and watch anime, cartoons, series, and more – easier than ever on your Android device.
+Fork with Keiyoushi index.pb repository support and extension crash fixes.
 
-[![Discord server](https://img.shields.io/discord/841701076242530374.svg?label=&labelColor=6A7EC2&color=7389D8&logo=discord&logoColor=FFFFFF)](https://discord.gg/F32UjdJZrR)
-[![GitHub downloads](https://img.shields.io/github/downloads/aniyomiorg/aniyomi/total?label=downloads&labelColor=27303D&color=0D1117&logo=github&logoColor=FFFFFF&style=flat)](https://github.com/aniyomiorg/aniyomi/releases)
-
-[![CI](https://img.shields.io/github/actions/workflow/status/aniyomiorg/aniyomi/build_push.yml?labelColor=27303D)](https://github.com/aniyomiorg/aniyomi/actions/workflows/build_push.yml)
+[![CI](https://github.com/Yass5002/aniyomi-fork/actions/workflows/build_push.yml/badge.svg)](https://github.com/Yass5002/aniyomi-fork/actions/workflows/build_push.yml)
+[![Latest Release](https://img.shields.io/github/v/release/Yass5002/aniyomi-fork?label=Release&labelColor=06599d&color=043b69)](https://github.com/Yass5002/aniyomi-fork/releases/latest)
 [![License: Apache-2.0](https://img.shields.io/github/license/aniyomiorg/aniyomi?labelColor=27303D&color=818cf8)](/LICENSE)
-[![Translation status](https://img.shields.io/weblate/progress/aniyomi?labelColor=27303D&color=946300)](https://hosted.weblate.org/engage/aniyomi/)
 
 ## Download
 
-[![Aniyomi Stable](https://img.shields.io/github/release/aniyomiorg/aniyomi.svg?maxAge=3600&label=Stable&labelColor=06599d&color=043b69)](https://github.com/aniyomiorg/aniyomi/releases)
-[![Aniyomi Preview](https://img.shields.io/github/v/release/aniyomiorg/aniyomi-preview.svg?maxAge=3600&label=Beta&labelColor=2c2c47&color=1c1c39)](https://github.com/aniyomiorg/aniyomi-preview/releases)
+Get the latest APK from the [Releases](https://github.com/Yass5002/aniyomi-fork/releases) page.
 
 *Requires Android 8.0 or higher.*
 
@@ -27,6 +23,9 @@ Discover and watch anime, cartoons, series, and more – easier than ever on you
 
 <div align="left">
 
+* Support for Mihon extension-lib 1.6 and Protobuf (`index.pb`) extension repositories (Keiyoushi).
+* Runtime crash handling for third-party extensions.
+* Updated ProGuard rules for Zstandard (`zstd`), `kotlin.time`, `kotlinx.datetime`, and Injekt.
 * Local reading and watching of content.
 * A configurable reader with multiple viewers, reading directions and other settings.
 * A configurable player built on mpv-android with multiple options and settings.
@@ -45,7 +44,7 @@ Discover and watch anime, cartoons, series, and more – easier than ever on you
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-Before reporting a new issue, take a look at the [FAQ](https://aniyomi.org/docs/faq/general), the [changelog](https://aniyomi.org/changelogs/) and the already opened [issues](https://github.com/aniyomiorg/aniyomi/issues); if you got any questions, join our [Discord server](https://discord.gg/F32UjdJZrR).
+Before reporting a new issue, take a look at the already opened [issues](https://github.com/Yass5002/aniyomi-fork/issues).
 
 ### Repositories
 

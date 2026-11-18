@@ -345,7 +345,7 @@ class AnimeScreenModel(
             }
         } catch (_: CancellationException) {
             // ignore
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             val message = when (e) {
                 is NoEpisodesException -> {
                     context.stringResource(AYMR.strings.no_episodes_error)

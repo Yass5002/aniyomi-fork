@@ -42,9 +42,9 @@ class AppUpdateChecker {
 
 val GITHUB_REPO: String by lazy {
     if (isPreviewBuildType) {
-        "Yass5002/aniyomi"
+        "Yass5002/aniyomi-fork"
     } else {
-        "Yass5002/aniyomi"
+        "Yass5002/aniyomi-fork"
     }
 }
 

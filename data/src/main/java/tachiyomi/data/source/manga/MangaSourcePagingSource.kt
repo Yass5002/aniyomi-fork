@@ -5,6 +5,7 @@ import eu.kanade.tachiyomi.source.CatalogueSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.SManga
+import kotlinx.coroutines.CancellationException
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.domain.items.chapter.model.NoChaptersException
 import tachiyomi.domain.source.manga.repository.SourcePagingSourceType
@@ -49,7 +50,9 @@ abstract class SourcePagingSource(
                     .takeIf { it.mangas.isNotEmpty() }
                     ?: throw NoChaptersException()
             }
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
             return LoadResult.Error(e)
         }
 
