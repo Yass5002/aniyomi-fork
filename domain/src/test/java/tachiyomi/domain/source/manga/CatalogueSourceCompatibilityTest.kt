@@ -99,6 +99,7 @@ class CatalogueSourceCompatibilityTest {
     @Test
     fun `SManga and SChapter copy preserve memo while create defaults to EMPTY`() {
         val original = SManga.create().apply {
+            url = "/sample"
             title = "Sample"
             memo = buildJsonObject { put("token", JsonPrimitive("abc")) }
         }
@@ -106,6 +107,7 @@ class CatalogueSourceCompatibilityTest {
         copied.memo shouldBe original.memo
 
         val chapterA = SChapter.create().apply {
+            url = "/ch1"
             name = "Ch 1"
             memo = buildJsonObject { put("id", JsonPrimitive("xyz")) }
         }
